@@ -155,3 +155,19 @@ export default function renderer (req) {
 }
 
 ```
+
+### 实现客户端路由
+
+```js
+import React from 'react'
+import ReactDOM from 'react-dom' 
+import routes from '../share/routes'
+import { BrowserRouter } from 'react-router-dom'
+import { renderRoutes } from 'react-router-config'
+
+ReactDOM.hydrate(
+    <BrowserRouter>
+        { renderRoutes(routes) }
+    </BrowserRouter>, 
+    document.getElementById('root'))
+```
