@@ -120,3 +120,38 @@ const config = {
 }
 module.exports = merge(baseConfig, config)
 ```
+
+## 路由支持
+
+* 在 React SSR 项目中需要实现两端路由. 
+* 客户端路由是用于支持用户通过点击链接的形式跳转页面. 
+* 服务器端路由是用于支持用户直接从浏览器地址栏中访问页面.
+* 客户端和服务器端公用一套路由规则.
+
+### 实现服务器端路由
+
+1. Express 路由接收任何请求
+Express 路由接收所有 GET 请求, 服务器端 React 路由通过请求路径匹配要进行渲染的组件.
+
+```js
+app.get('*', (req, res) => {  });
+```
+
+2. 服务器端路由配置 
+
+```js
+import React from 'react'
+import routes from '../share/routes'
+import { renderToString } from 'react-dom/server'
+import { renderRoutes } from 'react-router-config'
+import { StaticRouter } from 'react-router-dom'
+
+export default function renderer (req) {
+    const content = renderToString(
+        <StaticRouter location={req.path}>
+            { renderRoutes(routes) }
+        </StaticRouter>);
+  // ...
+}
+
+```
