@@ -171,3 +171,56 @@ ReactDOM.hydrate(
     </BrowserRouter>, 
     document.getElementById('root'))
 ```
+
+## Redux 支持
+
+* 在实现了 React SSR 的项目中需要实现两端 Redux.
+* 客户端 Redux 就是通过客户端 JavaScript 管理 Store 中的数据.
+* 服务器端 Redux 就是在服务器端搭建一套 Redux 代码, 用于管理组件中的数据.
+* 客户端和服务器端共用一套 Reducer 代码.
+* 创建 Store 的代码由于参数传递不同所以不可以共用.
+
+### 实现客户端 Redux
+
+1. 创建 Store
+2. 配置 Store
+3. 创建 Action 和 Reducer
+4. 配置 polyfill
+由于浏览器不能识别异步函数代码, 所以需要 polyfill 进行填充.
+
+
+```js
+// 创建 store  src/client/createStroe.js
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import reducer from '../share/store/reducers'
+
+const store = createStore(reducer, {}, applyMiddleware(thunk))
+
+export default store
+
+```
+
+
+### 实现服务器端 Redux
+
+```js
+//   src/server/createStore.js
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import reducer from '../share/store/reducers'
+
+export default () => createStore(reducer, {}, applyMiddleware(thunk))
+
+```
+* 服务器端 store 数据填充
+
+问题：服务器端创建的 store 是空的, 组件并不能从Store中获取到任何数据.
+解决：服务器端在渲染组件之前获取到组件所需要的数据.
+
+
+1.  在组件中添加 loadData 方法, 此方法用于获取组件所需数据，方法被服务器端调用
+2. 将 loadData 方法保存在当前组件的路由信息对象中.
+3. 服务器端在接收到请求后，根据请求地址匹配出要渲染的组件的路由信息
+4. 从路由信息中获取组件中的 loadData 方法并调用方法获取组件所需数据
+5. 当数据获取完成以后再渲染组件并将结果响应到客户端
