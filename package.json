@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "dev:server-build": "webpack --config webpack.server.js --watch",
+    "dev:server-run": "nodemon --watch build --exec \"node build/bundle.js\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

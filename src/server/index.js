@@ -1,3 +1,4 @@
+import React from 'react'
 import app from './http'
 import Home from '../share/pages/Home'
 import { renderToString } from 'react-dom/server'
