@@ -92,3 +92,31 @@ ReactDOM.hydrate(<APP />, document.getElementById('root'))
 * 在响应给客户端的 HTML 代码中添加 script 标签, 请求客户端 JavaScript 打包文件.
 * 服务器端程序实现静态资源访问功能, 客户端 JavaScript 打包文件会被作为静态资源使用.
 
+服务器端实现静态资源访问
+
+* 服务器端程序实现静态资源访问功能, 客户端 JavaScript 打包文件会被作为静态资源使用.
+ 
+```js
+app.use(express.static('public'))
+```
+
+## 优化 
+
+* 合并 webpack 配置
+    * 服务器端 webpack 配置和客户端 webpack 配置存在重复. 将重复配置抽象到 webpack.base.js 配置文件中.
+
+* 合并项目启动命令
+    * 目的: 使用一个命令启动项目, 解决多个命令启动的繁琐问题. 通过 npm-run-all 工具实现.
+    * "dev": "npm-run-all --parallel dev:*"
+* 服务器端打包文件体积优化
+    * 问题：在服务器端打包文件中, 包含了 Node 系统模块. 导致打包文件本身体积庞大.
+    * 解决：通过 webpack 配置剔除打包文件中的 Node 模块.
+
+```js
+const nodeExternals = require('webpack-node-externals')
+const config = {
+    // ... 其他选项
+    externals: [nodeExternals()]
+}
+module.exports = merge(baseConfig, config)
+```
